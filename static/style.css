@@ -1,0 +1,4 @@
+/* Compatibility shim: import the real stylesheet (styles.css) */
+@import url('styles.css');
+
+/* You can add overrides here if needed */

@@ -1,0 +1,25 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+}
+
+.progress {
+    height: 20px;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.navbar-brand {
+    font-weight: 600;
+}

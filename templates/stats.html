@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h4 class="mb-4">Network Statistics</h4>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body text-center">
+                <h2>{{ stats.total_unique_devices }}</h2>
+                <p>Total Unique Devices</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body text-center">
+                <h2>{{ stats.recently_active }}</h2>
+                <p>Active (Last 24h)</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-body text-center">
+                <h2>{{ stats.devices_by_type.values()|sum }}</h2>
+                <p>Currently Online</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body text-center">
+                <h2>{{ stats.top_vendors.values()|sum }}</h2>
+                <p>Known Vendors</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Devices by Type</h5>
+            </div>
+            <div class="card-body">
+                {% if stats.devices_by_type %}
+                    {% for type, count in stats.devices_by_type.items() %}
+                    <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                        <span>{{ type or 'Unknown' }}</span>
+                        <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No device type data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Top Vendors</h5>
+            </div>
+            <div class="card-body">
+                {% if stats.top_vendors %}
+                    {% for vendor, count in stats.top_vendors.items() %}
+                    <div class="d-flex justify-content-between align-items-center mb-2 p-2 border rounded">
+                        <span>{{ vendor }}</span>
+                        <span class="badge bg-success rounded-pill">{{ count }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No vendor data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Recent Scan Activity</h5>
+            </div>
+            <div class="card-body">
+                {% if stats.recent_scans %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Number of Scans</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for scan in stats.recent_scans %}
+                            <tr>
+                                <td>{{ scan.date }}</td>
+                                <td>{{ scan.scan_count }} scans</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No scan data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

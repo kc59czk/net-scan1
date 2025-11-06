@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4>Network Scan</h4>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                <div class="alert alert-danger">
+                    <strong>Error:</strong> {{ error }}
+                </div>
+                {% endif %}
+                
+                <form method="POST" id="scanForm">
+                    <div class="mb-3">
+                        <label for="network_range" class="form-label">Network Range</label>
+                        <input type="text" class="form-control" id="network_range" name="network_range" 
+                               placeholder="e.g., 192.168.1.0/24 (leave empty for auto-detection)">
+                        <div class="form-text">Leave empty to automatically detect your local network.</div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" id="scanButton">
+                        <i class="fas fa-search"></i> Start Scan
+                    </button>
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+                </form>
+                
+                <div id="scanProgress" class="mt-3" style="display: none;">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             style="width: 100%">Scanning network...</div>
+                    </div>
+                    <div class="text-center mt-2">
+                        <small class="text-muted" id="scanStatus">Initializing scan...</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('scanForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const scanButton = document.getElementById('scanButton');
+    const scanProgress = document.getElementById('scanProgress');
+    const scanStatus = document.getElementById('scanStatus');
+    
+    scanButton.disabled = true;
+    scanProgress.style.display = 'block';
+    scanStatus.textContent = 'Discovering devices...';
+    
+    const formData = new FormData(this);
+    
+    fetch('{{ url_for("scan_network") }}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            scanStatus.textContent = `Found ${data.devices_found} devices in ${data.duration}s`;
+            setTimeout(() => {
+                window.location.href = '/scan/' + data.session_id;
+            }, 1000);
+        } else {
+            scanStatus.textContent = 'Error: ' + data.error;
+            scanButton.disabled = false;
+        }
+    })
+    .catch(error => {
+        scanStatus.textContent = 'Error: ' + error;
+        scanButton.disabled = false;
+    });
+});
+</script>
+{% endblock %}

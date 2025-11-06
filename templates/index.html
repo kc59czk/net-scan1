@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ stats.total_unique_devices }}</h5>
+                <p class="card-text">Total Devices</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ stats.recently_active }}</h5>
+                <p class="card-text">Active (24h)</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ stats.recent_scans|length }}</h5>
+                <p class="card-text">Scans Today</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ stats.devices_by_type.values()|sum }}</h5>
+                <p class="card-text">Current Online</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5>Recent Devices</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_devices %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>IP Address</th>
+                                <th>Hostname</th>
+                                <th>Type</th>
+                                <th>Last Seen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for device in recent_devices %}
+                            <tr>
+                                <td>{{ device.ip_address }}</td>
+                                <td>{{ device.hostname }}</td>
+                                <td>{{ device.device_type }}</td>
+                                <td>{{ device.last_seen|datetime }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No devices found. Run your first scan!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Device Types</h5>
+            </div>
+            <div class="card-body">
+                {% for type, count in stats.devices_by_type.items() %}
+                <div class="d-flex justify-content-between mb-2">
+                    <span>{{ type }}</span>
+                    <span class="badge bg-primary">{{ count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-body text-center">
+                <a href="{{ url_for('scan_network') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-search"></i> Start New Scan
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

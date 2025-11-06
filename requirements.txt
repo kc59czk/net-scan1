@@ -1,0 +1,5 @@
+Flask==2.3.3
+python-nmap==0.7.1
+pandas
+prettytable==3.8.0
+python-dateutil==2.8.2

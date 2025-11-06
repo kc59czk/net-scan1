@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4>Device Details - {{ device.ip_address }}</h4>
+    <a href="{{ url_for('all_devices') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Devices
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Basic Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <th>IP Address:</th>
+                        <td>{{ device.ip_address }}</td>
+                    </tr>
+                    <tr>
+                        <th>Hostname:</th>
+                        <td>{{ device.hostname or 'Unknown' }}</td>
+                    </tr>
+                    <tr>
+                        <th>MAC Address:</th>
+                        <td><code>{{ device.mac_address or 'Unknown' }}</code></td>
+                    </tr>
+                    <tr>
+                        <th>Vendor:</th>
+                        <td>{{ device.vendor or 'Unknown' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Device Type:</th>
+                        <td><span class="badge bg-secondary">{{ device.device_type or 'Unknown' }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>OS Guess:</th>
+                        <td>{{ device.os_guess or 'Unknown' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Status:</th>
+                        <td>
+                            <span class="badge bg-{{ 'success' if device.status == 'up' else 'warning' }}">
+                                {{ device.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>First Seen:</th>
+                        <td>{{ device.first_seen|datetime }}</td>
+                    </tr>
+                    <tr>
+                        <th>Last Seen:</th>
+                        <td>{{ device.last_seen|datetime }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Services & Open Ports</h5>
+            </div>
+            <div class="card-body">
+                {% if device.services %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Port</th>
+                                <th>Service</th>
+                                <th>Version</th>
+                                <th>Product</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for service in device.services %}
+                            <tr>
+                                <td><code>{{ service.port }}</code></td>
+                                <td>{{ service.service_name }}</td>
+                                <td>{{ service.version }}</td>
+                                <td>{{ service.product }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No open ports found</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Scan History</h5>
+            </div>
+            <div class="card-body">
+                {% if device.history %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>IP Address</th>
+                                <th>Status</th>
+                                <th>Open Ports</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for history in device.history %}
+                            <tr>
+                                <td>{{ history.timestamp|datetime }}</td>
+                                <td>{{ history.ip_address }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if history.status == 'up' else 'warning' }}">
+                                        {{ history.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if history.open_ports and history.open_ports != '[]' %}
+                                    <code>{{ history.open_ports|from_json|join(', ') }}</code>
+                                    {% else %}
+                                    <span class="text-muted">None</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No history available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
